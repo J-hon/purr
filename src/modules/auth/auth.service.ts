@@ -1,8 +1,8 @@
 import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/modules/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/user.model';
+import { User } from 'src/modules/user/user.model';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<User | undefined> {
-    const user = await this.userService.findUser({ email });
+    const user = await this.userService.find({ email });
     if (!user) {
       throw new NotFoundException('User not found');
     }

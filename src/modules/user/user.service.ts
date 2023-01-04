@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.model';
@@ -12,14 +12,19 @@ export class UserService {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createUser(payload: RegisterDto): Promise<User> {
+  async create(payload: RegisterDto): Promise<User> {
     const salt = await bcrypt.genSalt();
     payload.password = await bcrypt.hash(payload.password, salt);
 
-    return this.userModel.create(payload);
+    return await this.userModel.create(payload);
   }
 
-  async findUser(query: object): Promise<User | null> {
-    return this.userModel.findOne(query);
+  async find(query: object): Promise<User | undefined> {
+    const user = await this.userModel.findOne(query).exec();
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    return user;
   }
 }
