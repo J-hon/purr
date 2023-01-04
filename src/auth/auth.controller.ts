@@ -34,6 +34,6 @@ export class AuthController {
     )
     request: RegisterDto,
   ): Promise<User> {
-    return await this.userService.createUser(request);
+    return await this.userService.create(request);
   }
 }

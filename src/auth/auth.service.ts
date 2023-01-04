@@ -15,7 +15,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<User | undefined> {
-    const user = await this.userService.findUser({ email });
+    const user = await this.userService.find({ email });
     if (!user) {
       throw new NotFoundException('User not found');
     }
