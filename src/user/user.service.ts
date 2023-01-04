@@ -7,19 +7,19 @@ import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
-    constructor(
-        @InjectModel('user') 
-        private readonly userModel: Model<UserDocument>
-    ) {}
+  constructor(
+    @InjectModel('user')
+    private readonly userModel: Model<UserDocument>,
+  ) {}
 
-    async createUser(payload: RegisterDto): Promise<User> {
-        const salt = await bcrypt.genSalt();
-        payload.password = await bcrypt.hash(payload.password, salt);
-        
-        return this.userModel.create(payload);
-    }
-    
-    async getUser(query: object): Promise<User|null> {
-        return this.userModel.findOne(query);
-    }
+  async createUser(payload: RegisterDto): Promise<User> {
+    const salt = await bcrypt.genSalt();
+    payload.password = await bcrypt.hash(payload.password, salt);
+
+    return this.userModel.create(payload);
+  }
+
+  async findUser(query: object): Promise<User | null> {
+    return this.userModel.findOne(query);
+  }
 }

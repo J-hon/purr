@@ -5,16 +5,17 @@ import { RegisterDto } from './dto/register.dto';
 
 @Controller('user')
 export class UserController {
+  constructor(private readonly userService: UserService) {}
 
-    constructor(
-        private readonly userService: UserService
-    ) {}
-
-    @Post('register')
-    async register(
-        @Body(new ValidationPipe({ errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY })) 
-        request: RegisterDto
-    ): Promise<User> {
-        return await this.userService.createUser(request);
-    }
+  @Post('register')
+  async register(
+    @Body(
+      new ValidationPipe({
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      }),
+    )
+    request: RegisterDto,
+  ): Promise<User> {
+    return await this.userService.createUser(request);
+  }
 }
