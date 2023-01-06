@@ -1,6 +1,14 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, ValidationPipe } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  Param,
+  Post,
+  ValidationPipe
+} from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Product } from './product.model';
+import { Product } from './product.entity';
 import { ProductService } from './product.service';
 
 @Controller('product')
@@ -13,7 +21,7 @@ export class ProductController {
   }
 
   @Get(':id')
-  async show(@Param('id') id: string): Promise<Product | undefined> {
+  async show(@Param('id') id: number): Promise<Product | undefined> {
     return await this.productService.findById(id);
   }
 
@@ -21,10 +29,10 @@ export class ProductController {
   async store(
     @Body(
       new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
+      })
     )
-    request: CreateProductDto,
+    request: CreateProductDto
   ): Promise<Product> {
     return await this.productService.create(request);
   }

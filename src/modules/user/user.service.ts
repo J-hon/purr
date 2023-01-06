@@ -1,26 +1,30 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument } from './user.model';
+import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
+import { Repository } from 'typeorm';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel('user')
-    private readonly userModel: Model<UserDocument>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>
   ) {}
 
   async create(payload: RegisterDto): Promise<User> {
-    const salt = await bcrypt.genSalt();
-    payload.password = await bcrypt.hash(payload.password, salt);
+    const salt: string = await bcrypt.genSalt();
+    const password: string = await bcrypt.hash(payload.password, salt);
+    payload.password = password;
 
-    return await this.userModel.create(payload);
+    const user = await this.userRepository.create(payload);
+    await this.userRepository.save(user);
+
+    return user;
   }
 
-  async find(query: object): Promise<User | undefined> {
-    const user = await this.userModel.findOne(query).exec();
+  async findByEmail(email: string): Promise<User | undefined> {
+    const user = await this.userRepository.findOne({ where: { email } });
     if (!user) {
       throw new NotFoundException('User does not exist');
     }

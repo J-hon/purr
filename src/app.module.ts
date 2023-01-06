@@ -1,25 +1,24 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ProductModule } from './modules/product/product.module';
+import { TypeOrmConfigService } from './config/typeorm.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    MongooseModule.forRoot('mongodb://localhost:27017', {
-      dbName: 'super-mart',
+      isGlobal: true
     }),
     UserModule,
     AuthModule,
     ProductModule,
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService })
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService]
 })
 export class AppModule {}
