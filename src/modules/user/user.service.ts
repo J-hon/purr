@@ -9,15 +9,17 @@ import { User } from './user.entity';
 export class UserService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
   ) {}
 
   async create(payload: RegisterDto): Promise<User> {
     const salt: string = await bcrypt.genSalt();
     const password: string = await bcrypt.hash(payload.password, salt);
+
     payload.password = password;
 
     const user = await this.userRepository.create(payload);
+
     await this.userRepository.save(user);
 
     return user;
@@ -25,6 +27,7 @@ export class UserService {
 
   async findByEmail(email: string): Promise<User | undefined> {
     const user = await this.userRepository.findOne({ where: { email } });
+
     if (!user) {
       throw new NotFoundException('User does not exist');
     }

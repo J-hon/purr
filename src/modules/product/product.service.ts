@@ -9,7 +9,7 @@ import { Product } from './product.entity';
 export class ProductService {
   constructor(
     @InjectRepository(Product)
-    private readonly productRepository: Repository<Product>
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   async get(): Promise<Product[]> {
@@ -18,6 +18,7 @@ export class ProductService {
 
   async findById(id: number): Promise<Product | undefined> {
     const product = await this.productRepository.findOne({ where: { id } });
+
     if (!product) {
       throw new NotFoundException('Product does not exist');
     }
@@ -27,8 +28,8 @@ export class ProductService {
 
   async create(payload: CreateProductDto | any): Promise<Product> {
     const sku = generateSku(14);
-
     const product: Product = new Product();
+
     product.name = payload.name;
     product.description = payload.description;
     product.sku = sku;

@@ -1,3 +1,3 @@
 export default () => ({
-  appSecret: process.env.APP_KEY
+  appSecret: process.env.APP_KEY,
 });

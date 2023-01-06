@@ -11,14 +11,14 @@ import { TypeOrmConfigService } from './config/typeorm.config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true
+      isGlobal: true,
     }),
     UserModule,
     AuthModule,
     ProductModule,
-    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService })
+    TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
   ],
   controllers: [AppController],
-  providers: [AppService]
+  providers: [AppService],
 })
 export class AppModule {}
