@@ -1,23 +1,23 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { generateSku } from 'src/utils/utils';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Product, ProductDocument } from './product.model';
+import { Product } from './product.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
-    @InjectModel('product')
-    private readonly productModel: Model<ProductDocument>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>
   ) {}
 
   async get(): Promise<Product[]> {
-    return await this.productModel.find().exec();
+    return await this.productRepository.find();
   }
 
-  async findById(id: string): Promise<Product | undefined> {
-    const product = await this.productModel.findById(id).exec();
+  async findById(id: number): Promise<Product | undefined> {
+    const product = await this.productRepository.findOne({ where: { id } });
     if (!product) {
       throw new NotFoundException('Product does not exist');
     }
@@ -26,7 +26,15 @@ export class ProductService {
   }
 
   async create(payload: CreateProductDto | any): Promise<Product> {
-    payload.sku = generateSku(14);
-    return await this.productModel.create(payload);
+    const sku = generateSku(14);
+
+    const product: Product = new Product();
+    product.name = payload.name;
+    product.description = payload.description;
+    product.sku = sku;
+    product.price = payload.price;
+    product.quantity = payload.quantity;
+
+    return await product.save();
   }
 }
