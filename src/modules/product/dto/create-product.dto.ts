@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsPositive } from 'class-validator';
 
 export class CreateProductDto {
   @IsNotEmpty()
@@ -17,5 +17,7 @@ export class CreateProductDto {
   @IsPositive()
   readonly quantity: number;
 
-  sku?: string;
+  @IsNotEmpty()
+  @IsArray()
+  readonly categoryIds: number[];
 }
