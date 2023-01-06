@@ -22,7 +22,7 @@ export class Product extends BaseEntity {
   sku: string;
 
   @Column({ type: 'bigint' })
-  price: string;
+  price: number;
 
   @Column({ type: 'bigint' })
   quantity: number;

@@ -18,7 +18,7 @@ export class UserService {
 
     payload.password = password;
 
-    const user = await this.userRepository.create(payload);
+    const user = this.userRepository.create(payload);
 
     await this.userRepository.save(user);
 
