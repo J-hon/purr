@@ -1,4 +1,15 @@
-import { Controller, Request, Post, Get, UseGuards, Body, ValidationPipe, HttpStatus, UseInterceptors, ClassSerializerInterceptor } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  Get,
+  UseGuards,
+  Body,
+  ValidationPipe,
+  HttpStatus,
+  UseInterceptors,
+  ClassSerializerInterceptor,
+} from '@nestjs/common';
 import { RegisterDto } from 'src/modules/user/dto/register.dto';
 import { User } from 'src/modules/user/user.entity';
 import { UserService } from 'src/modules/user/user.service';
@@ -11,7 +22,7 @@ import { LocalAuthGuard } from './guard/local-auth.guard';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -30,10 +41,10 @@ export class AuthController {
   async register(
     @Body(
       new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      })
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      }),
     )
-    request: RegisterDto
+    request: RegisterDto,
   ): Promise<User> {
     return await this.userService.create(request);
   }

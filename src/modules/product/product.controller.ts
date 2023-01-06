@@ -5,7 +5,7 @@ import {
   HttpStatus,
   Param,
   Post,
-  ValidationPipe
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './product.entity';
@@ -29,10 +29,10 @@ export class ProductController {
   async store(
     @Body(
       new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY
-      })
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      }),
     )
-    request: CreateProductDto
+    request: CreateProductDto,
   ): Promise<Product> {
     return await this.productService.create(request);
   }
