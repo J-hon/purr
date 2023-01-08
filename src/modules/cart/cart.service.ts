@@ -2,7 +2,6 @@ import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '../product/entity/product.entity';
-import { User } from '../user/user.entity';
 import { Cart } from './cart.entity';
 import { AddToCartDto } from './dto/add-to-cart.dto';
 
@@ -11,9 +10,6 @@ export class CartService {
   constructor(
     @InjectRepository(Cart)
     private readonly cartRepository: Repository<Cart>,
-
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
 
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
@@ -55,5 +51,17 @@ export class CartService {
     await this.cartRepository.save(newItem);
 
     return 'Item added to cart';
+  }
+
+  async removeFromCart(productId: number, userId: number): Promise<void> {
+    const cart = await this.cartRepository.findOne({
+      where: { user_id: userId, product_id: productId },
+    });
+
+    if (!cart) {
+      throw new HttpException('Item doesn"t exist in your cart', 400);
+    }
+
+    await this.cartRepository.delete(cart.id);
   }
 }

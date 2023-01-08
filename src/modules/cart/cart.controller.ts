@@ -39,4 +39,13 @@ export class CartController {
   async get(@Request() req: any): Promise<Cart[]> {
     return await this.cartService.getUserCart(req.user.id);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Post('remove')
+  async remove(@Body() body: any, @Request() req: any): Promise<any> {
+    const { product_id } = body;
+
+    return await this.cartService.removeFromCart(product_id, req.user.id);
+  }
 }
