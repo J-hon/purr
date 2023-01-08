@@ -8,7 +8,6 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProductModule } from './modules/product/product.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
 import { CartModule } from './modules/cart/cart.module';
-import { CartController } from './modules/cart/cart.controller';
 
 @Module({
   imports: [
@@ -21,7 +20,7 @@ import { CartController } from './modules/cart/cart.controller';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
   ],
-  controllers: [AppController, CartController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

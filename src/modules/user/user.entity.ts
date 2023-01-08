@@ -3,10 +3,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
+import { Cart } from '../cart/cart.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -31,4 +33,7 @@ export class User extends BaseEntity {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
+
+  @OneToMany(() => Cart, (cart) => cart.user)
+  carts: Cart[];
 }

@@ -1,3 +1,4 @@
+import { Cart } from 'src/modules/cart/cart.entity';
 import {
   BaseEntity,
   Column,
@@ -5,6 +6,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -18,7 +20,7 @@ export class Product extends BaseEntity {
   @Column({ type: 'varchar', length: 191 })
   name: string;
 
-  @Column({ unique: true, type: 'text' })
+  @Column({ type: 'text' })
   description: string;
 
   @Column({ type: 'varchar', length: 30 })
@@ -47,4 +49,7 @@ export class Product extends BaseEntity {
     },
   })
   categories: Category[];
+
+  @OneToMany(() => Cart, (cart: Cart) => cart.product)
+  carts: Cart[];
 }

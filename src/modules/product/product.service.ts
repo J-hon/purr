@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { generateSku } from 'src/utils/utils';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from './entity/product.entity';
@@ -40,9 +40,9 @@ export class ProductService {
 
     product.sku = generateSku(14);
 
-    const categories = await this.categoryRepository.findByIds(
-      payload.categoryIds,
-    );
+    const categories = await this.categoryRepository.findBy({
+      id: In(payload.categoryIds),
+    });
 
     product.categories = categories;
 
