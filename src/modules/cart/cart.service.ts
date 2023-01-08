@@ -28,12 +28,10 @@ export class CartService {
     });
 
     if (!product) {
-      throw new NotFoundException('Product does not exist');
+      throw new NotFoundException("Product doesn't exist");
     }
 
-    const cartItems = this.getUserCart(userId);
-
-    const cartItem = (await cartItems).filter(
+    const cartItem = (await this.getUserCart(userId)).filter(
       (item: any): boolean => Number(item.product_id) === product.id,
     );
 
@@ -59,7 +57,7 @@ export class CartService {
     });
 
     if (!cart) {
-      throw new HttpException('Item doesn"t exist in your cart', 400);
+      throw new HttpException("Item doesn't exist in your cart", 400);
     }
 
     await this.cartRepository.delete(cart.id);
