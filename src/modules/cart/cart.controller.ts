@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -47,5 +48,12 @@ export class CartController {
     const { product_id } = body;
 
     return await this.cartService.removeFromCart(product_id, req.user.id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @Delete('')
+  async destroy(@Request() req: any): Promise<any> {
+    return await this.cartService.emptyCart(req.user.id);
   }
 }

@@ -62,4 +62,8 @@ export class CartService {
 
     await this.cartRepository.delete(cart.id);
   }
+
+  async emptyCart(userId: number): Promise<void> {
+    await this.cartRepository.delete({ user_id: userId });
+  }
 }
