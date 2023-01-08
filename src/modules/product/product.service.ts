@@ -1,23 +1,32 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { generateSku } from 'src/utils/utils';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Product } from './product.entity';
+import { Product } from './entity/product.entity';
+import { Category } from './entity/category.entity';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectRepository(Product)
     private readonly productRepository: Repository<Product>,
+
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
   ) {}
 
   async get(): Promise<Product[]> {
-    return await this.productRepository.find();
+    return await this.productRepository.find({
+      relations: ['categories'],
+    });
   }
 
   async findById(id: number): Promise<Product | undefined> {
-    const product = await this.productRepository.findOne({ where: { id } });
+    const product = await this.productRepository.findOne({
+      where: { id },
+      relations: ['categories'],
+    });
 
     if (!product) {
       throw new NotFoundException('Product does not exist');
@@ -26,16 +35,19 @@ export class ProductService {
     return product;
   }
 
-  async create(payload: CreateProductDto | any): Promise<Product> {
-    const sku = generateSku(14);
-    const product: Product = new Product();
+  async create(payload: CreateProductDto): Promise<Product> {
+    const product = this.productRepository.create(payload);
 
-    product.name = payload.name;
-    product.description = payload.description;
-    product.sku = sku;
-    product.price = payload.price;
-    product.quantity = payload.quantity;
+    product.sku = generateSku(14);
 
-    return await product.save();
+    const categories = await this.categoryRepository.findBy({
+      id: In(payload.categoryIds),
+    });
+
+    product.categories = categories;
+
+    await this.productRepository.save(product);
+
+    return product;
   }
 }

@@ -18,7 +18,7 @@ export class UserService {
 
     payload.password = password;
 
-    const user = await this.userRepository.create(payload);
+    const user = this.userRepository.create(payload);
 
     await this.userRepository.save(user);
 
@@ -26,7 +26,7 @@ export class UserService {
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
-    const user = await this.userRepository.findOne({ where: { email } });
+    const user = await this.userRepository.findOneBy({ email });
 
     if (!user) {
       throw new NotFoundException('User does not exist');
