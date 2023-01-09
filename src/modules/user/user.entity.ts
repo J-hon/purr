@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { Cart } from '../cart/cart.entity';
+import { Order } from '../order/entity/order.entity';
 
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
@@ -36,4 +37,7 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Cart, (cart) => cart.user)
   carts: Cart[];
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 }

@@ -36,7 +36,7 @@ export class CartController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Get('')
+  @Get()
   async get(@Request() req: any): Promise<Cart[]> {
     return await this.cartService.getUserCart(req.user.id);
   }
@@ -52,7 +52,7 @@ export class CartController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
-  @Delete('')
+  @Delete()
   async destroy(@Request() req: any): Promise<any> {
     return await this.cartService.emptyCart(req.user.id);
   }
