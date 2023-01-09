@@ -25,29 +25,27 @@ export class OrderService {
   ) {}
 
   async create(userId: number): Promise<Order> {
-    const carts = await this.cartService.getUserCart(userId);
+    const cartItems = await this.cartService.getUserCart(userId);
 
-    this.checkProduct(carts);
+    this.checkProductsValidity(cartItems);
 
-    const payload = this.orderRepository.create({
+    const createOrder = this.orderRepository.create({
       user_id: userId,
       is_completed: true,
     });
 
-    const order = await this.orderRepository.save(payload);
+    const order = await this.orderRepository.save(createOrder);
 
-    const products = carts.map((cart) => ({
-      product_id: cart.product_id,
+    const products = cartItems.map((item) => ({
+      product_id: item.product_id,
       order_id: order.id,
-      price: cart.price,
-      quantity: cart.quantity,
-      sub_total: cart.price * cart.quantity,
+      price: item.price,
+      quantity: item.quantity,
+      sub_total: item.price * item.quantity,
     }));
 
     order.items = this.orderItemRepository.create(products);
-    order.total = products.reduce((acc, product) => {
-      return acc + product.sub_total;
-    }, 0);
+    this.calculateOrderTotal(order);
 
     await this.orderRepository.save(order);
 
@@ -58,18 +56,24 @@ export class OrderService {
     return order;
   }
 
-  private async checkProduct(products: Cart[]) {
+  private calculateOrderTotal(order: Order) {
+    order.total = order.items.reduce((acc, product) => {
+      return acc + product.sub_total;
+    }, 0);
+  }
+
+  private async checkProductsValidity(products: Cart[]) {
     products.forEach(async (element: Cart) => {
-      let product = await this.productService.findById(element.product_id);
+      const product = await this.productService.findById(element.product_id);
 
       if (product) {
-        let inStock = product.quantity < 1;
+        const inStock = product.quantity < 1;
 
         if (inStock) {
           throw new HttpException('Out of stock', 400);
         }
 
-        let quantityAvailable = product.quantity < element.quantity;
+        const quantityAvailable = product.quantity < element.quantity;
 
         if (quantityAvailable) {
           throw new HttpException(
@@ -83,7 +87,7 @@ export class OrderService {
 
   private async updateProductQuantity(products: OrderItem[]): Promise<void> {
     products.forEach(async (el) => {
-      let product = await this.productService.findById(el.product_id);
+      const product = await this.productService.findById(el.product_id);
 
       if (product) {
         product.quantity -= el.quantity;
