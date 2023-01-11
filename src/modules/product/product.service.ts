@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { generateSku } from 'src/utils/utils';
@@ -23,16 +23,10 @@ export class ProductService {
   }
 
   async findById(id: number): Promise<Product | undefined> {
-    const product = await this.productRepository.findOne({
+    return this.productRepository.findOneOrFail({
       where: { id },
       relations: ['categories'],
     });
-
-    if (!product) {
-      throw new NotFoundException('Product does not exist');
-    }
-
-    return product;
   }
 
   async create(payload: CreateProductDto): Promise<Product> {
