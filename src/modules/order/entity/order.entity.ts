@@ -1,11 +1,13 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { User } from '../../user/user.entity';
 import { OrderItem } from './order-item.entity';
@@ -23,6 +25,12 @@ export class Order extends BaseEntity {
 
   @Column({ default: false })
   is_completed: boolean;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp' })
+  updated_at: Date;
 
   @ManyToOne(() => User, (user) => user.carts)
   @JoinColumn({

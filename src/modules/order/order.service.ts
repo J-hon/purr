@@ -1,18 +1,21 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Connection, EntityManager, Repository } from 'typeorm';
 import { CartService } from '../cart/cart.service';
 import { Order } from './entity/order.entity';
 import { OrderItem } from './entity/order-item.entity';
-import { ProductService } from '../product/product.service';
 import { Product } from '../product/entity/product.entity';
 import { Cart } from '../cart/cart.entity';
 
 @Injectable()
 export class OrderService {
   constructor(
+    private connection: Connection,
     private readonly cartService: CartService,
-    private readonly productService: ProductService,
 
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
@@ -24,74 +27,102 @@ export class OrderService {
     private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
-  async create(userId: number): Promise<Order> {
+  async create(userId: number): Promise<any> {
+    const queryRunner = this.connection.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     const cartItems = await this.cartService.getUserCart(userId);
 
-    this.checkProductsValidity(cartItems);
+    this.checkIfProductsAreStillAvailable(cartItems);
 
-    const createOrder = this.orderRepository.create({
-      user_id: userId,
-      is_completed: true,
-    });
+    try {
+      const createOrder = this.orderRepository.create({
+        user_id: userId,
+        is_completed: true,
+      });
 
-    const order = await this.orderRepository.save(createOrder);
+      const order = await queryRunner.manager.save(Order, createOrder);
 
-    const products = cartItems.map((item) => ({
-      product_id: item.product_id,
-      order_id: order.id,
-      price: item.price,
-      quantity: item.quantity,
-      sub_total: item.price * item.quantity,
-    }));
+      const products = cartItems.map((item) => ({
+        product_id: item.product_id,
+        order_id: order.id,
+        price: item.price,
+        quantity: item.quantity,
+        sub_total: item.price * item.quantity,
+      }));
 
-    order.items = this.orderItemRepository.create(products);
-    this.calculateOrderTotal(order);
+      order.items = this.orderItemRepository.create(products);
+      order.total = this.sumOrderTotal(order.items);
 
-    await this.orderRepository.save(order);
+      await this.updateStockOfOrderItems(queryRunner.manager, order.items);
 
-    this.cartService.emptyCart(userId);
+      await this.emptyCart(queryRunner.manager, userId);
 
-    await this.updateProductQuantity(order.items);
+      await queryRunner.manager.save(Order, order);
 
-    return order;
+      await queryRunner.commitTransaction();
+
+      return order;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new InternalServerErrorException();
+    } finally {
+      await queryRunner.release();
+    }
   }
 
-  private calculateOrderTotal(order: Order) {
-    order.total = order.items.reduce((acc, product) => {
+  private async emptyCart(
+    entityManager: EntityManager,
+    userId: number,
+  ): Promise<void> {
+    await entityManager.delete(Cart, { user_id: userId });
+  }
+
+  private sumOrderTotal(orderItems: OrderItem[]): number {
+    return orderItems.reduce((acc, product): number => {
       return acc + product.sub_total;
     }, 0);
   }
 
-  private async checkProductsValidity(products: Cart[]) {
-    products.forEach(async (element: Cart) => {
-      const product = await this.productService.findById(element.product_id);
+  private async updateStockOfOrderItems(
+    entityManager: EntityManager,
+    products: OrderItem[],
+  ): Promise<void> {
+    products.forEach(async (el) => {
+      const product = await this.findProduct(el.product_id);
 
-      if (product) {
-        const inStock = product.quantity < 1;
-
-        if (inStock) {
-          throw new HttpException('Out of stock', 400);
-        }
-
-        const quantityAvailable = product.quantity < element.quantity;
-
-        if (quantityAvailable) {
-          throw new HttpException(
-            'Only ' + product.quantity + ' item(s) are available',
-            400,
-          );
-        }
-      }
+      product.quantity -= el.quantity;
+      await entityManager.save(Product, product);
     });
   }
 
-  private async updateProductQuantity(products: OrderItem[]): Promise<void> {
-    products.forEach(async (el) => {
-      const product = await this.productService.findById(el.product_id);
+  private async findProduct(id: number): Promise<Product> {
+    return await this.productRepository.findOneOrFail({
+      where: { id },
+    });
+  }
 
-      if (product) {
-        product.quantity -= el.quantity;
-        this.productRepository.save(product);
+  private async checkIfProductsAreStillAvailable(
+    products: Cart[],
+  ): Promise<void> {
+    products.forEach(async (el: Cart) => {
+      const product = await this.findProduct(el.product_id);
+
+      const inStock = product.quantity < 1;
+
+      if (inStock) {
+        throw new HttpException(product.name + ' is out of stock', 400);
+      }
+
+      const quantityAvailable = product.quantity < el.quantity;
+
+      if (quantityAvailable) {
+        throw new HttpException(
+          product.name + 'has only ' + product.quantity + ' item(s) available',
+          400,
+        );
       }
     });
   }
