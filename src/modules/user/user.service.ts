@@ -4,12 +4,15 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    private readonly mailService: MailService,
   ) {}
 
   async create(payload: RegisterDto): Promise<User> {
@@ -21,6 +24,8 @@ export class UserService {
     const user = this.userRepository.create(payload);
 
     await this.userRepository.save(user);
+
+    await this.mailService.sendWelcomeMail(user);
 
     return user;
   }

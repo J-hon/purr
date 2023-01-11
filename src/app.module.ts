@@ -9,6 +9,7 @@ import { ProductModule } from './modules/product/product.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { OrderModule } from './modules/order/order.module';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
     OrderModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
