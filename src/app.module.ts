@@ -10,8 +10,7 @@ import { TypeOrmConfigService } from './config/typeorm.config';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
 import { MailModule } from './modules/mail/mail.module';
-import { BullModule } from '@nestjs/bull';
-import { QueueConfigService } from './config/queue.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,8 +21,8 @@ import { QueueConfigService } from './config/queue.config';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
     OrderModule,
-    BullModule.forRootAsync({ useClass: QueueConfigService }),
     MailModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [AppService],

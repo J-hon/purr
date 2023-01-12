@@ -10,12 +10,15 @@ import { Order } from './entity/order.entity';
 import { OrderItem } from './entity/order-item.entity';
 import { Product } from '../product/entity/product.entity';
 import { Cart } from '../cart/cart.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OrderCreatedEvent } from './events/order-created.event';
 
 @Injectable()
 export class OrderService {
   constructor(
     private connection: Connection,
     private readonly cartService: CartService,
+    private eventEmitter: EventEmitter2,
 
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
@@ -63,6 +66,11 @@ export class OrderService {
       await queryRunner.manager.save(Order, order);
 
       await queryRunner.commitTransaction();
+
+      const orderCreatedEvent = new OrderCreatedEvent();
+
+      orderCreatedEvent.order = order;
+      this.eventEmitter.emit('order.created', orderCreatedEvent);
 
       return order;
     } catch (error) {

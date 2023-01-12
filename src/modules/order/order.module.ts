@@ -9,13 +9,14 @@ import { OrderService } from './order.service';
 import { CartService } from '../cart/cart.service';
 import { OrderItem } from './entity/order-item.entity';
 import { Category } from '../product/entity/category.entity';
+import { OrderCreatedListener } from './listeners/order-created.listener';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, Cart, OrderItem, Product, User, Category]),
   ],
   controllers: [OrderController],
-  providers: [OrderService, CartService],
+  providers: [OrderService, CartService, OrderCreatedListener],
   exports: [OrderService],
 })
 export class OrderModule {}
