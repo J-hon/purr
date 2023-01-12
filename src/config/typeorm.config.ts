@@ -9,11 +9,11 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
   public createTypeOrmOptions(): TypeOrmModuleOptions {
     return {
       type: 'postgres',
-      host: this.config.get<string>('DATABASE_HOST'),
-      port: this.config.get<number>('DATABASE_PORT'),
-      database: this.config.get<string>('DATABASE_NAME'),
-      username: this.config.get<string>('DATABASE_USER'),
-      password: this.config.get<string>('DATABASE_PASSWORD'),
+      host: this.config.get<string>('DB_HOST'),
+      port: this.config.get<number>('DB_PORT'),
+      database: this.config.get<string>('DB_NAME'),
+      username: this.config.get<string>('DB_USER'),
+      password: this.config.get<string>('DB_PASSWORD'),
       entities: [__dirname + '/../**/*.entity.{ts,js}'],
       synchronize: true,
     };

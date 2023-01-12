@@ -12,8 +12,8 @@ export class QueueConfigService implements SharedBullConfigurationFactory {
   async createSharedConfiguration(): Promise<BullModuleOptions> {
     return {
       redis: {
-        host: this.configService.get<string>('QUEUE_HOST'),
-        port: this.configService.get<number>('QUEUE_PORT'),
+        host: this.configService.get<string>('REDIS_HOST'),
+        port: this.configService.get<number>('REDIS_PORT'),
       },
     };
   }
