@@ -4,12 +4,17 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+
+    @InjectQueue('send-welcome-mail')
+    private readonly mailQueue: Queue,
   ) {}
 
   async create(payload: RegisterDto): Promise<User> {
@@ -21,6 +26,8 @@ export class UserService {
     const user = this.userRepository.create(payload);
 
     await this.userRepository.save(user);
+
+    await this.mailQueue.add('send-welcome-mail', { user });
 
     return user;
   }

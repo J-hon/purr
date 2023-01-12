@@ -9,18 +9,21 @@ import { ProductModule } from './modules/product/product.module';
 import { TypeOrmConfigService } from './config/typeorm.config';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
+import { MailModule } from './modules/mail/mail.module';
+import { BullModule } from '@nestjs/bull';
+import { QueueConfigService } from './config/queue.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+    ConfigModule.forRoot({ isGlobal: true }),
     UserModule,
     AuthModule,
     ProductModule,
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
     OrderModule,
+    BullModule.forRootAsync({ useClass: QueueConfigService }),
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
