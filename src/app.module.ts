@@ -11,6 +11,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
 import { MailModule } from './modules/mail/mail.module';
 import { BullModule } from '@nestjs/bull';
+import { QueueConfigService } from './config/queue.config';
 
 @Module({
   imports: [
@@ -21,12 +22,7 @@ import { BullModule } from '@nestjs/bull';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
     OrderModule,
-    BullModule.forRoot({
-      redis: {
-        host: 'localhost',
-        port: 6379,
-      },
-    }),
+    BullModule.forRootAsync({ useClass: QueueConfigService }),
     MailModule,
   ],
   controllers: [AppController],

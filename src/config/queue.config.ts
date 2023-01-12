@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 export class QueueConfigService implements SharedBullConfigurationFactory {
   constructor(private readonly configService: ConfigService) {}
 
-  createSharedConfiguration(): BullModuleOptions {
+  async createSharedConfiguration(): Promise<BullModuleOptions> {
     return {
       redis: {
         host: this.configService.get<string>('QUEUE_HOST'),
