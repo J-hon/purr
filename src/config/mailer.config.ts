@@ -11,16 +11,16 @@ export class MailerConfigService implements MailerOptionsFactory {
   async createMailerOptions(): Promise<MailerOptions> {
     return {
       transport: {
-        host: this.configService.get('MAIL_HOST'),
+        host: this.configService.get<string>('MAIL_HOST'),
         secure: false,
-        port: this.configService.get('MAIL_PORT'),
+        port: this.configService.get<number>('MAIL_PORT'),
         auth: {
-          user: this.configService.get('MAIL_USER'),
-          pass: this.configService.get('MAIL_PASSWORD'),
+          user: this.configService.get<string>('MAIL_USER'),
+          pass: this.configService.get<string>('MAIL_PASSWORD'),
         },
       },
       defaults: {
-        from: `"Super Mart" <${this.configService.get('MAIL_FROM')}>`,
+        from: `"Super Mart" <${this.configService.get<string>('MAIL_FROM')}>`,
       },
       template: {
         dir: join(__dirname, '../modules/mail/templates'),
