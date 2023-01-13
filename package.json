@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@agent-ly/nestjs-agenda": "^2.0.4",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.2.0",
@@ -30,9 +31,8 @@
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/typeorm": "^9.0.1",
-    "@types/agenda": "^4.1.0",
     "@types/bcrypt": "^5.0.0",
-    "agenda": "^5.0.0",
+    "agenda": "^4.4.0",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

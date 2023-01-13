@@ -9,11 +9,22 @@ export class MailService {
   sendWelcomeMail(user: User): void {
     this.mailerService.sendMail({
       to: user.email,
-      // from: '"Support Team" <support@example.com>', // override default from
       subject: 'Welcome to Super Mart!',
       template: 'welcome-mail',
       context: {
         name: user.name,
+      },
+    });
+  }
+
+  sendOrderMail(job: any): void {
+    this.mailerService.sendMail({
+      to: 'johndoe@example.com',
+      subject: 'Order confirmed!',
+      template: 'order-confirmed-mail',
+      context: {
+        name: 'John Doe',
+        order_id: job.order.order.id,
       },
     });
   }

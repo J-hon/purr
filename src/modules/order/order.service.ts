@@ -7,12 +7,15 @@ import { OrderItem } from './entity/order-item.entity';
 import { ProductService } from '../product/product.service';
 import { Product } from '../product/entity/product.entity';
 import { Cart } from '../cart/cart.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OrderCreatedEvent } from './events/order-created.event';
 
 @Injectable()
 export class OrderService {
   constructor(
     private readonly cartService: CartService,
     private readonly productService: ProductService,
+    private eventEmitter: EventEmitter2,
 
     @InjectRepository(Order)
     private readonly orderRepository: Repository<Order>,
@@ -55,7 +58,17 @@ export class OrderService {
 
     await this.updateProductQuantity(order.items);
 
+    this.emitOrderEvent(order);
+
     return order;
+  }
+
+  private emitOrderEvent(order: Order) {
+    const orderCreatedEvent = new OrderCreatedEvent();
+
+    orderCreatedEvent.order = order;
+
+    this.eventEmitter.emit('order.created', orderCreatedEvent);
   }
 
   private async checkProduct(products: Cart[]) {

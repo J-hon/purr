@@ -1,3 +1,4 @@
+import { AgendaModule } from '@agent-ly/nestjs-agenda';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -23,6 +24,12 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     OrderModule,
     MailModule,
     EventEmitterModule.forRoot(),
+    AgendaModule.forRoot({
+      db: {
+        address: 'mongodb://localhost:27017/super-mart',
+        collection: 'jobs',
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
