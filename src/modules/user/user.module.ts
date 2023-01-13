@@ -4,17 +4,11 @@ import { UserController } from './user.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { MailModule } from '../mail/mail.module';
-import { BullModule } from '@nestjs/bull';
+import { MailService } from '../mail/mail.service';
 
 @Module({
-  imports: [
-    MailModule,
-    TypeOrmModule.forFeature([User]),
-    BullModule.registerQueue({
-      name: 'send-welcome-mail',
-    }),
-  ],
-  providers: [UserService],
+  imports: [MailModule, TypeOrmModule.forFeature([User])],
+  providers: [UserService, MailService],
   controllers: [UserController],
   exports: [UserService],
 })

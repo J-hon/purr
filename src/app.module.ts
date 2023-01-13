@@ -1,3 +1,4 @@
+import { AgendaModule } from '@agent-ly/nestjs-agenda';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -10,8 +11,7 @@ import { TypeOrmConfigService } from './config/typeorm.config';
 import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
 import { MailModule } from './modules/mail/mail.module';
-import { BullModule } from '@nestjs/bull';
-import { QueueConfigService } from './config/queue.config';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -22,8 +22,14 @@ import { QueueConfigService } from './config/queue.config';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     CartModule,
     OrderModule,
-    BullModule.forRootAsync({ useClass: QueueConfigService }),
     MailModule,
+    EventEmitterModule.forRoot(),
+    AgendaModule.forRoot({
+      db: {
+        address: 'mongodb://localhost:27017/super-mart',
+        collection: 'jobs',
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
