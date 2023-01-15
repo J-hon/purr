@@ -34,7 +34,7 @@ export class OrderService {
 
     const payload = this.orderRepository.create({
       user_id: userId,
-      is_completed: true,
+      is_completed: false,
     });
 
     const order = await this.orderRepository.save(payload);
@@ -63,7 +63,7 @@ export class OrderService {
     return order;
   }
 
-  private emitOrderEvent(order: Order) {
+  private emitOrderEvent(order: Order): void {
     const orderCreatedEvent = new OrderCreatedEvent();
 
     orderCreatedEvent.order = order;
@@ -71,7 +71,7 @@ export class OrderService {
     this.eventEmitter.emit('order.created', orderCreatedEvent);
   }
 
-  private async checkProduct(products: Cart[]) {
+  private async checkProduct(products: Cart[]): Promise<void> {
     products.forEach(async (element: Cart) => {
       const product = await this.productService.findById(element.product_id);
 
