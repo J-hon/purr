@@ -12,6 +12,7 @@ import { CartModule } from './modules/cart/cart.module';
 import { OrderModule } from './modules/order/order.module';
 import { MailModule } from './modules/mail/mail.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
         collection: 'jobs',
       },
     }),
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService],
