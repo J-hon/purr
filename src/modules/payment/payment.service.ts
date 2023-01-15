@@ -6,7 +6,7 @@ import { PaystackService } from './gateway/paystack/paystack.service';
 export class PaymentService {
   constructor(private readonly paystackService: PaystackService) {}
 
-  async charge(payload: Gateway) {
+  async charge(payload: Gateway): Promise<any> {
     return await this.paystackService.initialize(payload);
   }
 }

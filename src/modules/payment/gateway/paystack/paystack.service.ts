@@ -21,6 +21,9 @@ export class PaystackService implements PaymentGateway {
         {
           email: payload.email,
           amount: payload.amount * 100,
+          metadata: {
+            order_id: payload.order_id,
+          },
         },
         {
           headers: {

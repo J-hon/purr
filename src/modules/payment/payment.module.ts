@@ -5,9 +5,11 @@ import { PaystackService } from './gateway/paystack/paystack.service';
 import { PaymentService } from './payment.service';
 import { PaystackWebhookController } from './gateway/paystack/paystack-webhook.controller';
 import { PaystackWebhookService } from './gateway/paystack/paystack-webhook.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Order } from '../order/entity/order.entity';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, TypeOrmModule.forFeature([Order])],
   providers: [PaystackService, PaymentService, PaystackWebhookService],
   controllers: [PaymentController, PaystackWebhookController],
   exports: [PaymentService],
