@@ -33,11 +33,7 @@ export class ProductController {
 
   @Post('')
   async store(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+    @Body(new ValidationPipe())
     request: CreateProductDto,
   ): Promise<Product> {
     return await this.productService.create(request);

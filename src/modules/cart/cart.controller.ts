@@ -26,11 +26,7 @@ export class CartController {
   @HttpCode(HttpStatus.OK)
   @Post('add')
   async store(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+    @Body(new ValidationPipe())
     request: AddToCartDto,
     @Request() req: any,
   ): Promise<string> {

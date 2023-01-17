@@ -16,11 +16,7 @@ export class PaymentController {
   @Post()
   @HttpCode(HttpStatus.OK)
   async pay(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+    @Body(new ValidationPipe())
     request: PaymentDto,
   ): Promise<any> {
     return await this.paymentService.charge(request);
