@@ -1,5 +1,4 @@
 import {
-  Request,
   Controller,
   Post,
   UseGuards,
@@ -7,8 +6,10 @@ import {
   HttpCode,
   UseInterceptors,
 } from '@nestjs/common';
+import { RequestUser } from 'src/utils/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { TransformInterceptor } from '../common/common.interceptor';
+import { User } from '../user/user.entity';
 import { Order } from './entity/order.entity';
 import { OrderService } from './order.service';
 
@@ -20,7 +21,7 @@ export class OrderController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @HttpCode(HttpStatus.OK)
-  async checkout(@Request() req: any): Promise<Order> {
-    return await this.orderService.create(req.user.id);
+  async checkout(@RequestUser() user: User): Promise<Order> {
+    return await this.orderService.create(user.id);
   }
 }

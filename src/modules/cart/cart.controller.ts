@@ -6,13 +6,14 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Request,
   UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
+import { RequestUser } from 'src/utils/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { TransformInterceptor } from '../common/common.interceptor';
+import { User } from '../user/user.entity';
 import { Cart } from './cart.entity';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/add-to-cart.dto';
@@ -28,31 +29,31 @@ export class CartController {
   async store(
     @Body(new ValidationPipe())
     request: AddToCartDto,
-    @Request() req: any,
+    @RequestUser() user: User,
   ): Promise<string> {
-    return await this.cartService.add(request, req.user.id);
+    return await this.cartService.add(request, user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Get()
-  async get(@Request() req: any): Promise<Cart[]> {
-    return await this.cartService.getUserCart(req.user.id);
+  async get(@RequestUser() user: User): Promise<Cart[]> {
+    return await this.cartService.getUserCart(user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post('remove')
-  async remove(@Body() body: any, @Request() req: any): Promise<any> {
+  async remove(@Body() body: any, @RequestUser() user: User): Promise<any> {
     const { product_id } = body;
 
-    return await this.cartService.removeFromCart(product_id, req.user.id);
+    return await this.cartService.removeFromCart(product_id, user.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Delete()
-  async destroy(@Request() req: any): Promise<any> {
-    return await this.cartService.emptyCart(req.user.id);
+  async destroy(@RequestUser() user: User): Promise<any> {
+    return await this.cartService.emptyCart(user.id);
   }
 }
