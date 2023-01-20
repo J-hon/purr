@@ -44,11 +44,7 @@ export class AuthController {
 
   @Post('register')
   async register(
-    @Body(
-      new ValidationPipe({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    )
+    @Body(new ValidationPipe())
     request: RegisterDto,
   ): Promise<User> {
     return await this.userService.create(request);
